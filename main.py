@@ -9,11 +9,17 @@ db.init_app(app)
 
 all_books = []
 
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text, nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
+
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), unique=True, nullable=False)
     author = db.Column(db.String(250), nullable=False)
     rating = db.Column(db.Float, nullable=False)
+    comments = db.relationship('Comment', backref='book', lazy=True)
 
 with app.app_context():
     db.create_all()
@@ -67,6 +73,19 @@ def edit(id):
         return redirect(url_for('home'))
  
     return render_template("edit_rating.html", book=the_book)
+
+@app.route('/add_comment/<int:id>', methods = ['GET', 'POST'])
+def add_comment(id):
+    if request.method == 'POST':
+        comment_text = request.form['comment_text']
+        book = Book.query.get(id)
+        new_comment = Comment(text=comment_text, book=book)
+        db.session.add(new_comment)
+        db.session.commit()
+        return redirect(url_for('book_details', book_id=book_id))
+    # Resto do código
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

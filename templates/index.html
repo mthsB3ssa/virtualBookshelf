@@ -17,11 +17,19 @@
                 <form method="POST" action="{{ url_for('delete', id=book.id) }}" onsubmit="return confirm('Tem certeza de que deseja excluir este livro?')">
                     <button type="submit">Excluir</button>
                 </form>
-                
-                
+                <a href="{{ url_for('add_comment', id=book.id) }}">Adicionar Comentário</a>
+    
             </li>
             {% endfor %}
         </ul>
+
+        <h2>Comentários:</h2>
+        <ul>
+            {% for comment in books.comments %}
+            <li>{{ comment.text }}</li>
+            {% endfor %}
+        </ul>
+
         
 <a href="{{ url_for('add') }}">Add New Book</a>
 </body>
